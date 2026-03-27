@@ -102,12 +102,12 @@ public class DatabaseHelper {
     }
 
     public static User getUserByUsername(String username) {
-        String sql = "SELECT id, username, role FROM users WHERE username = ?";
+        String sql = "SELECT id, username, password, role FROM users WHERE username = ?";
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return new User(rs.getInt("id"), rs.getString("username"), rs.getString("role"));
+                    return new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"), rs.getString("role"), "User", "");
                 }
             }
         } catch (SQLException e) {

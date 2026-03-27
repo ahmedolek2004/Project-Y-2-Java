@@ -1,10 +1,10 @@
 package app;
 
-import view.MainFrame;
+import view.MainFrameV2;
 
 public class App {
 
     public static void main(String[] args) throws Exception {
-        MainFrame.main(args);
+        MainFrameV2.main(args);
     }
 }

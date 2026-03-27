@@ -1,6 +1,6 @@
 package view;
 
-import database.DatabaseHelper;
+import database.JSONDatabaseHelper;
 import model.Student;
 import model.Subject;
 import model.Enrollment;
@@ -64,7 +64,7 @@ public class MainFrame extends JFrame {
             return showLoginDialog();
         }
 
-        String role = DatabaseHelper.authenticate(username, password);
+        String role = JSONDatabaseHelper.authenticate(username, password);
         if (role == null) {
             JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Error", JOptionPane.ERROR_MESSAGE);
             return showLoginDialog();
@@ -112,7 +112,7 @@ public class MainFrame extends JFrame {
                 return;
             }
 
-            DatabaseHelper.addStudent(new Student(0, name, email, phone));
+            JSONDatabaseHelper.addStudent(new Student(0, name, email, phone));
             clearStudentFields(nameField, emailField, phoneField);
             loadStudents();
         });
@@ -136,7 +136,7 @@ public class MainFrame extends JFrame {
             int id = (int) studentModel.getValueAt(selectedRow, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this student?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                DatabaseHelper.deleteStudent(id);
+                JSONDatabaseHelper.deleteStudent(id);
                 loadStudents();
             }
         });
@@ -193,7 +193,7 @@ public class MainFrame extends JFrame {
                 return;
             }
 
-            DatabaseHelper.addSubject(new Subject(0, name, code, credits));
+            JSONDatabaseHelper.addSubject(new Subject(0, name, code, credits));
             clearSubjectFields(nameField, codeField, creditsField);
             loadSubjects();
         });
@@ -217,7 +217,7 @@ public class MainFrame extends JFrame {
             int id = (int) subjectModel.getValueAt(selectedRow, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this subject?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                DatabaseHelper.deleteSubject(id);
+                JSONDatabaseHelper.deleteSubject(id);
                 loadSubjects();
             }
         });
@@ -286,7 +286,7 @@ public class MainFrame extends JFrame {
                 return;
             }
             loadEnrollments(selected.getId());
-            double gpa = DatabaseHelper.calculateGPA(selected.getId());
+            double gpa = JSONDatabaseHelper.calculateGPA(selected.getId());
             gpaLabel.setText(String.format("GPA: %.2f", gpa));
         });
 
@@ -313,9 +313,9 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Grade must be a number.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            DatabaseHelper.enrollStudentInSubject(selectedStudent.getId(), selectedSubject.getId(), grade);
+            JSONDatabaseHelper.enrollStudentInSubject(selectedStudent.getId(), selectedSubject.getId(), grade);
             loadEnrollments(selectedStudent.getId());
-            double gpa = DatabaseHelper.calculateGPA(selectedStudent.getId());
+            double gpa = JSONDatabaseHelper.calculateGPA(selectedStudent.getId());
             gpaLabel.setText(String.format("GPA: %.2f", gpa));
             gradeField.setText("");
         });
@@ -337,15 +337,15 @@ public class MainFrame extends JFrame {
             String subjectCode = (String) enrollmentModel.getValueAt(selectedRow, 1);
             Subject subject = findSubjectByCode(subjectCode);
             if (subject != null) {
-                DatabaseHelper.unenrollStudentFromSubject(selectedStudent.getId(), subject.getId());
+                JSONDatabaseHelper.unenrollStudentFromSubject(selectedStudent.getId(), subject.getId());
                 loadEnrollments(selectedStudent.getId());
-                double gpa = DatabaseHelper.calculateGPA(selectedStudent.getId());
+                double gpa = JSONDatabaseHelper.calculateGPA(selectedStudent.getId());
                 gpaLabel.setText(String.format("GPA: %.2f", gpa));
             }
         });
 
         topStudentBtn.addActionListener(e -> {
-            Student top = DatabaseHelper.getTopStudent();
+            Student top = JSONDatabaseHelper.getTopStudent();
             if (top != null) {
                 JOptionPane.showMessageDialog(this, "Top Student: " + top.getName() + " (ID: " + top.getId() + ")", "Top Student", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -377,7 +377,7 @@ public class MainFrame extends JFrame {
 
     private void loadStudents() {
         studentModel.setRowCount(0);
-        List<Student> students = DatabaseHelper.getAllStudents();
+        List<Student> students = JSONDatabaseHelper.getAllStudents();
         for (Student s : students) {
             studentModel.addRow(new Object[]{s.getId(), s.getName(), s.getEmail(), s.getPhone()});
         }
@@ -385,7 +385,7 @@ public class MainFrame extends JFrame {
 
     private void loadSubjects() {
         subjectModel.setRowCount(0);
-        List<Subject> subjects = DatabaseHelper.getAllSubjects();
+        List<Subject> subjects = JSONDatabaseHelper.getAllSubjects();
         for (Subject s : subjects) {
             subjectModel.addRow(new Object[]{s.getId(), s.getName(), s.getCode(), s.getCredits()});
         }
@@ -393,7 +393,7 @@ public class MainFrame extends JFrame {
 
     private void loadStudentsForCombo(JComboBox<Student> combo) {
         combo.removeAllItems();
-        List<Student> students = DatabaseHelper.getAllStudents();
+        List<Student> students = JSONDatabaseHelper.getAllStudents();
         for (Student s : students) {
             combo.addItem(s);
         }
@@ -401,7 +401,7 @@ public class MainFrame extends JFrame {
 
     private void loadSubjectsForCombo(JComboBox<Subject> combo) {
         combo.removeAllItems();
-        List<Subject> subjects = DatabaseHelper.getAllSubjects();
+        List<Subject> subjects = JSONDatabaseHelper.getAllSubjects();
         for (Subject s : subjects) {
             combo.addItem(s);
         }
@@ -409,7 +409,7 @@ public class MainFrame extends JFrame {
 
     private void loadEnrollments(int studentId) {
         enrollmentModel.setRowCount(0);
-        List<Enrollment> enrollments = DatabaseHelper.getEnrollmentsForStudent(studentId);
+        List<Enrollment> enrollments = JSONDatabaseHelper.getEnrollmentsForStudent(studentId);
         for (Enrollment e : enrollments) {
             enrollmentModel.addRow(new Object[]{
                 e.getSubjectName(),
@@ -422,7 +422,7 @@ public class MainFrame extends JFrame {
     }
 
     private Subject findSubjectByCode(String code) {
-        List<Subject> subjects = DatabaseHelper.getAllSubjects();
+        List<Subject> subjects = JSONDatabaseHelper.getAllSubjects();
         for (Subject s : subjects) {
             if (s.getCode().equals(code)) {
                 return s;
